@@ -313,11 +313,11 @@ end
             end
             # special handling for PlotlyJS
             function Juno.render(pane::Juno.PlotPane, plt::Plot{PlotlyJSBackend})
-                display(Plots.PlotsDisplay(), plt)
+                display(PlotsBase.PlotsDisplay(), plt)
             end
         else
             function Juno.render(pane::Juno.PlotPane, plt::Plot)
-                display(Plots.PlotsDisplay(), plt)
+                display(PlotsBase.PlotsDisplay(), plt)
                 s = "PlotPane turned off.  Unset ENV[\"PLOTS_USE_ATOM_PLOTPANE\"] and restart Julia to enable it."
                 Juno.render(pane, HTML(s))
             end
@@ -325,7 +325,7 @@ end
 
         # special handling for plotly... use PlotsDisplay
         function Juno.render(pane::Juno.PlotPane, plt::Plot{PlotlyBackend})
-            display(Plots.PlotsDisplay(), plt)
+            display(PlotsBase.PlotsDisplay(), plt)
             s = "PlotPane turned off.  The plotly backend cannot render in the PlotPane due to javascript issues. Plotlyjs is similar to plotly and is compatible with the plot pane."
             Juno.render(pane, HTML(s))
         end

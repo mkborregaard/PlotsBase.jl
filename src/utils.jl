@@ -187,7 +187,7 @@ type SegmentsIterator
 end
 
 function iter_segments(args...)
-    tup = Plots.wraptuple(args)
+    tup = wraptuple(args)
     n = maximum(map(length, tup))
     SegmentsIterator(tup, n)
 end

@@ -28,7 +28,7 @@ function seriestype_supported(pkg::AbstractBackend, st::Symbol)
 end
 
 macro deps(st, args...)
-    :(Plots.series_recipe_dependencies($(quot(st)), $(map(quot, args)...)))
+    :(PlotsBase.series_recipe_dependencies($(quot(st)), $(map(quot, args)...)))
 end
 
 # get a list of all seriestypes
@@ -265,7 +265,7 @@ end
     #     # line_z := newlz
     #     linecolor := (isa(d[:linecolor], ColorGradient) ? d[:linecolor] : cgrad())
     # end
-    # Plots.DD(d)
+    # PlotsBase.DD(d)
     ()
 end
 @deps curves path
@@ -465,7 +465,7 @@ end
 
 
 @recipe function f(::Type{Val{:stepbins}}, x, y, z)
-    axis = d[:subplot][Plots.isvertical(d) ? :xaxis : :yaxis]
+    axis = d[:subplot][PlotsBase.isvertical(d) ? :xaxis : :yaxis]
 
     edge, weights, xscale, yscale, baseline = _preprocess_binlike(d, x, y)
 
@@ -495,7 +495,7 @@ end
     seriestype := :path
     ()
 end
-Plots.@deps stepbins path
+PlotsBase.@deps stepbins path
 
 wand_edges(x...) = (warn("Load the StatPlots package in order to use :wand bins. Defaulting to :auto", once = true); :auto)
 
@@ -604,7 +604,7 @@ end
         edge, weights, xscale, yscale, baseline = _preprocess_binlike(d, h.edges[1], h.weights)
         xerror --> diff(h.edges[1])/2
         seriestype := :scatter
-        (Plots._bin_centers(edge), weights)
+        (PlotsBase._bin_centers(edge), weights)
     else
         (h.edges[1], h.weights)
     end
@@ -636,15 +636,15 @@ end
         end
     end
 
-    x := Plots._bin_centers(edge_x)
-    y := Plots._bin_centers(edge_y)
+    x := PlotsBase._bin_centers(edge_x)
+    y := PlotsBase._bin_centers(edge_y)
     z := Surface(float_weights)
 
     match_dimensions := true
     seriestype := :heatmap
     ()
 end
-Plots.@deps bins2d heatmap
+PlotsBase.@deps bins2d heatmap
 
 
 @recipe function f(::Type{Val{:histogram2d}}, x, y, z)
@@ -834,7 +834,7 @@ function quiver_using_hack(d::KW)
         nanappend!(pts, P2[p, ppv-U1, ppv-U1+U2, ppv, ppv-U1-U2, ppv-U1])
     end
 
-    d[:x], d[:y] = Plots.unzip(pts[2:end])
+    d[:x], d[:y] = PlotsBase.unzip(pts[2:end])
     # KW[d]
 end
 
@@ -939,7 +939,7 @@ end
         legend --> nothing
     end
     n,m = size(mat)
-    Plots.SliceIt, 1:m, 1:n, Surface(mat)
+    PlotsBase.SliceIt, 1:m, 1:n, Surface(mat)
 end
 
 @recipe function f(::Type{Val{:spy}}, x,y,z)
