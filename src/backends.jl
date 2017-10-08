@@ -1,8 +1,31 @@
+
+
+immutable NoBackend <: AbstractBackend end
+
+const _backendType = Dict{Symbol, DataType}(:none => NoBackend)
+const _backendSymbol = Dict{DataType, Symbol}(NoBackend => :none)
+const _backends = Symbol[]
+const _initialized_backends = Set{Symbol}()
+
+type CurrentBackend
+  sym::Symbol
+  pkg::AbstractBackend
+end
+CurrentBackend(sym::Symbol) = CurrentBackend(sym, _backend_instance(sym))
+
+"Returns a list of supported backends"
+backends() = _backends
+
+"Returns the name of the current backend"
+backend_name() = CURRENT_BACKEND.sym
+_backend_instance(sym::Symbol) = haskey(_backendType, sym) ? _backendType[sym]() : error("Unsupported backend $sym")
+
 function add_backend(pkg::Symbol)
     info("To do a standard install of $pkg, copy and run this:\n\n")
     println(add_backend_string(_backend_instance(pkg)))
     println()
 end
+
 add_backend_string(b::AbstractBackend) = warn("No custom install defined for $(backend_name(b))")
 
 # don't do anything as a default
@@ -85,3 +108,52 @@ end
 _update_plot_object(plt::Plot) = nothing
 
 # ---------------------------------------------------------
+
+
+# these are args which every backend supports because they're not used in the backend code
+const _base_supported_args = [
+    :color_palette,
+    :background_color, :background_color_subplot,
+    :foreground_color, :foreground_color_subplot,
+    :group,
+    :seriestype,
+    :seriescolor, :seriesalpha,
+    :smooth,
+    :xerror, :yerror,
+    :subplot,
+    :x, :y, :z,
+    :show, :size,
+    :margin,
+    :left_margin,
+    :right_margin,
+    :top_margin,
+    :bottom_margin,
+    :html_output_format,
+    :layout,
+    :link,
+    :primary,
+    :series_annotations,
+    :subplot_index,
+    :discrete_values,
+    :projection,
+
+]
+
+function merge_with_base_supported(v::AVec)
+    v = vcat(v, _base_supported_args)
+    for vi in v
+        if haskey(_axis_defaults, vi)
+            for letter in (:x,:y,:z)
+                push!(v, Symbol(letter,vi))
+            end
+        end
+    end
+    Set(v)
+end
+
+
+const _attr = KW()
+const _seriestype = KW()
+const _marker = KW()
+const _style = KW()
+const _scale = KW()
