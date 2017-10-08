@@ -1,6 +1,6 @@
 __precompile__(true)
 
-module Plots
+module PlotsBase
 
 using Reexport
 
