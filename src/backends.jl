@@ -157,3 +157,18 @@ const _seriestype = KW()
 const _marker = KW()
 const _style = KW()
 const _scale = KW()
+
+using Base.Meta
+
+# create the various `is_xxx_supported` and `supported_xxxs` methods
+# by default they pass through to checking membership in `_gr_xxx`
+for s in (:attr, :seriestype, :marker, :style, :scale)
+    f = Symbol("is_", s, "_supported")
+    f2 = Symbol("supported_", s, "s")
+    @eval begin
+        $f(::AbstractBackend, $s) = false
+        $f(bend::AbstractBackend, $s::AbstractVector) = all(v -> $f(bend, v), $s)
+        $f($s) = $f(backend(), $s)
+        $f2() = $f2(backend())
+    end
+end
